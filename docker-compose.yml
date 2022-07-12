@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  main:
+    container_name: drivingschoolapplication
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 8000:8000
+    command: yarn start:dev
+    env_file:
+      - .env
+    networks:
+      - drivingschool
+    depends_on:
+      - redis
+      - postgres
+  database:
+    image: mongo:4.1.5
+    container_name: schoolapplicationdatabase
+    volumes:
+      - schoolapplicationdata:/data/db
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/konga --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5    
+networks:
+  webnet:
+volumes:
+  pgdata:

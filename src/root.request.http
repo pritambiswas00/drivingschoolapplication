@@ -1,0 +1,36 @@
+####Super Admin ######
+##Login##
+
+POST http://localhost:4000/root/login
+Content-Type: application/json
+
+{
+    "email":"admin@admin.com",
+    "password":"admin@123"
+}
+
+####Get All Admins ####
+
+GET http://localhost:4000/root/getAllAdmins
+Content-Type: application/json
+
+######Add Admin######
+POST http://localhost:4000/root/addAdmin
+Content-Content-Type: application/json
+
+{
+    "email":"admin@admin.com",
+    "password": "admin@123"
+}
+
+####Delete Admin ####
+DELETE http://localhost:4000/root/deleteAdmin
+Content-Type: application/json
+
+{
+    "email":"pritam2@gmail.com"
+}
+
+###Logout #####
+POST http://localhost:4000/root/logout
+Content-Type: application/json
