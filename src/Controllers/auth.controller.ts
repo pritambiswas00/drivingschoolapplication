@@ -1,7 +1,7 @@
 import { Controller, Inject, Get, Logger, Post, Body, Param, Patch, Delete, Session, UseInterceptors, UseGuards } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AuthService } from "../Services/auth.service";
-import { CreateScheduleDto, DeleteSchduleDto, LoginUserDto, UpdateScheduleDto } from '../Dtos/auth.user.Dtos';
+import { DeleteSchduleByUser, LoginUser, UpdateScheduleByUser } from '../Dtos/auth.user.Dtos';
 import { ConfigService } from '@nestjs/config';
 import {
   ApiOperation,
@@ -12,6 +12,7 @@ import { User } from 'src/Entity/user.model';
 import { IsUser } from 'src/Decorators/isUser.decorator';
 import { IsUserInterceptor } from 'src/Interceptors/isUser.interceptor';
 import { UserGuard } from 'src/Guards/isUser.guard';
+import { CreateSchedule } from 'src/Dtos/schedule.dtos';
 
 
 @ApiTags("User")
@@ -26,7 +27,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User Logged in' })
   @ApiResponse({ status: 403, description: 'Forbidden. Not Authenticated.' })
   @Post("/login")
-  async login (@Body() body: LoginUserDto, @Session() session: any) {
+  async login (@Body() body: LoginUser, @Session() session: any) {
     const user = await this.authService.login(body);
     session.userId = user._id;
     return user;
@@ -36,6 +37,7 @@ export class AuthController {
   /////////////Logout User///////////////
   @ApiOperation({ summary: 'Logout User *' })
   @Post("/logout")
+  @UseGuards(UserGuard)
   async logout (@Session() session: any) {
     return this.authService.logout(session);
   }
@@ -44,7 +46,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Create Schedule *' })
   @Post("/user/schedule/create")
   @UseGuards(UserGuard)
-  async createSchedule(@Body() body: CreateScheduleDto, @IsUser() user: User, @Session() session: any) {
+  async createSchedule(@Body() body: CreateSchedule, @IsUser() user: User, @Session() session: any) {
         return this.authService.createSchedule(body, session.userId);
   }
 
@@ -58,14 +60,14 @@ export class AuthController {
   @ApiOperation({ summary: 'Edit Schedule *' })
   @Patch("/user/schedule/edit")
   @UseGuards(UserGuard)
-  async editSchedule(@Body() body:UpdateScheduleDto, @IsUser() user: User, @Session() session: any) {
+  async editSchedule(@Body() body:UpdateScheduleByUser, @IsUser() user: User, @Session() session: any) {
         return this.authService.updateSchedule(body, session.userid);
   }
 
   @ApiOperation({ summary: 'Delete Schedule *' })
   @Delete("/user/schedule/delete")
   @UseGuards(UserGuard)
-  async deleteSchedule(@Body() body : DeleteSchduleDto, @Session() session: any) {
+  async deleteSchedule(@Body() body : DeleteSchduleByUser, @Session() session: any) {
        return this.authService.deleteSchedule(body, session.userid);
   }
 

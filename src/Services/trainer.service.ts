@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { TrainerDto } from "src/Dtos/auth.user.Dtos";
+import { ObjectId } from "mongodb";
+import { Model} from "mongoose";
+import { TrainerCreate, TrainerUpdate } from "src/Dtos/trainer.dto";
 import { Trainer, TrainerDocument } from "src/Entity/trainer.model";
 import { UtilService } from "src/Utils/Utils";
 
@@ -18,13 +19,13 @@ export class TrainerService{
     }
 
 
-    async create(trainer: TrainerDto) {
+    async create(trainer: TrainerCreate) {
          const newTrainer = new this.trainerModel(trainer);
          await newTrainer.save();
          return newTrainer;
     }
 
-    async deleteTrainer(trainerid: string) { 
+    async deleteTrainer(trainerid: ObjectId) { 
          const trainer = await this.trainerModel.findByIdAndDelete({
           _id: trainerid
          });
@@ -34,6 +35,31 @@ export class TrainerService{
 
     async getAllTrainer() {
         const trainers = await this.trainerModel.find({});
+        if(!trainers) return null;
         return trainers;
-    } 
+    }
+    
+    async findTrainerBasedOnEmailAndPhone(email: string, phonenumber: string) {
+            try{
+               const trainer = await this.trainerModel.findOne({ email: email, phonenumber: phonenumber });
+               if(!trainer) return null;
+               return trainer;
+            }catch(error){
+               throw new InternalServerErrorException(error)
+            }
+    }
+
+    async findOneById(id: ObjectId) {
+        const trainer = await this.trainerModel.findOne({ _id: id });
+        return trainer;
+    }
+
+    async editTrainer(trainer: TrainerUpdate, id: ObjectId){
+        const trainerexist = await this.trainerModel.findOne({ _id: id });
+        if(!trainerexist){
+            throw new NotFoundException("Trainer not found.")
+        }
+        await trainerexist.updateTrainer(trainer);
+        
+    }
 }

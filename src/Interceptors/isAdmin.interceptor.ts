@@ -9,9 +9,9 @@ export class IsAdminInterceptor implements NestInterceptor{
 
     async intercept(context: ExecutionContext, next: CallHandler<any>){
         const request = context.switchToHttp().getRequest();
-        console.log(request.session, "SESSION")
+       // console.log(request.session, "SESSION")
         const {adminId} = request.session || {}
-        console.log(adminId)
+        // console.log(adminId)
         if(adminId) {
             const admin = await this.adminService.findAdminById(adminId);
             request.admin = admin; 

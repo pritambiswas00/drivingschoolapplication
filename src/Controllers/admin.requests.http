@@ -1,31 +1,30 @@
-#############################Admin Requests#############################
-#Admin --> http://localhost:4000/admin
-###Login###
+###########################################################################
+                          ###Admin User #####
+
+///Admin Login/// 
 
 POST http://localhost:4000/admin/login
 Content-Type: application/json
 
 {
-    "email": "pritam@gmail.com",
-    "password" : "pritam@123"
+    "email": "admin@admin.com",
+    "password" : "admin@123"
     
 }
 
-###Logout###
-POST http://localhost:4000/admin/logout
-Content-Type: application/json
+////////////////////////////////////////////////////
+///Admin Create User////
+#####
 
-
-###Add User###
 POST http://localhost:4000/admin/addUser
-Content-Type: application/json
+Content-Type: application/json;
 
 {
-    "phonenumber" : "+918017393445",
-    "billnumber": "123pritam",
-    "name": "Pritam Biswas",
-    "startDate" : "07/03/2022",
-    "email" : "pritam.biswas@gmail.com",
-    "password": "pritam@123"
+    "billnumber":"123PRITAMAMAM",
+    "email": "pritam@gmail.com",
+    "phonenumber":"djbjsnmdnsmdnd",
+    "startDate":"344.dc",
+    "password":"pritam@123"
 }
+
 

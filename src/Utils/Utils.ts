@@ -23,7 +23,6 @@ export class UtilService {
     }
 
    convertToUnix (date: Date) {
-      console.log(date, "DATETETETE")
       const unixDate = parseInt((date.getTime() / 1000).toFixed(0));
       return unixDate;
    }

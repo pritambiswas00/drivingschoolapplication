@@ -1,52 +1,10 @@
-import { IsEmail, IsString, IsNotEmpty, IsPhoneNumber, IsOptional, IsAlphanumeric, Matches, IsObject } from "class-validator";
+import { IsEmail, IsString, IsNotEmpty, IsObject } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { CreateSchedule, UpdateSchedule } from "./schedule.dtos";
+import { ObjectId } from "mongodb";
 
 
-export class CreateUserDto {
-
-    @ApiProperty({ required : true})
-    @IsAlphanumeric()
-    @IsString()
-    @IsNotEmpty()
-    billnumber : string;
-
-    @ApiProperty({ required : true })
-    @IsEmail()
-    @IsString()
-    @IsNotEmpty()
-    email : string;
-    
-    @ApiProperty({ required : true })
-    @IsPhoneNumber()
-    @IsString()
-    @IsNotEmpty()
-    phonenumber : string;
-
-    @ApiProperty({ required : true })
-    @IsString()
-    @IsNotEmpty()
-    name : string;
-
-    @ApiProperty({ required : true })
-    @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
-    @IsString()
-    @IsNotEmpty()
-    startDate : string;
-
-    @ApiProperty({ required : false })
-    @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
-    @IsString()
-    @IsOptional()
-    endDate? : string;
-
-    @ApiProperty({ required : true })
-    @IsString()
-    @IsNotEmpty()
-    password : string;
-}
-
-
-export class LoginUserDto {
+export class LoginUser {
     
     @ApiProperty({ required : true })
     @IsEmail()
@@ -62,126 +20,34 @@ export class LoginUserDto {
 
 }
 
-export class CarDto {
-
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty() 
-    make : string;
- 
-    @ApiProperty({ required: true })
+export class CreateScheduleByUser{
+    @ApiProperty({ required : true, type: CreateSchedule })
+    @IsEmail()
     @IsString()
     @IsNotEmpty()
-    model : string;
-
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty()
-    vin : string;
+    schedule : CreateSchedule;
 }
 
-export class UpdateCarDto {
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    make ?: string;
- 
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    model ?: string;
-
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    vin ?: string;
-}
-
-export class TrainerDto {
-
-    @ApiProperty({ required: true })
+export class UpdateScheduleByUser{
+    @ApiProperty({ required : true, type: ObjectId })
     @IsString()
     @IsNotEmpty()
-    email : string;
+    scheduleid : ObjectId;
 
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty()
-    phonenumber : string;
-    
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty()
-    trainername : string;
-    
-    @ApiProperty({ required: true, type : CarDto })
+    @ApiProperty({ required : true, type : UpdateSchedule })
     @IsObject()
     @IsNotEmpty()
-    cardetails : CarDto
+    schedule : UpdateSchedule;
 }
 
-export class UpdateScheduleDto {
-    @ApiProperty({ required: true })
+export class DeleteSchduleByUser{
+    @ApiProperty({ required : true, type: ObjectId })
     @IsString()
     @IsNotEmpty()
-    id: string;
-
-
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    schedulename?: string;
-    
-    @ApiProperty({ required: false })
-    @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
-    @IsString()
-    @IsOptional()
-    scheduledate? : string;
-    
-    @ApiProperty({ required: false })
-    @Matches(/^[0-2][0-2]:[0-5][0-9]$/gm, {message : "Time must be HH:MM"})
-    @IsString()
-    @IsOptional()
-    scheduletime? : string;
-    
-
-    @ApiProperty({ required: false, type : TrainerDto})
-    @IsObject()
-    @IsOptional()
-    trainerdetails?: TrainerDto 
+    scheduleid : ObjectId;
 }
 
-export class CreateScheduleDto {
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty()
-    schedulename: string;
-    
-    @ApiProperty({ required: true })
-    @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
-    @IsString()
-    @IsNotEmpty()
-    scheduledate : string;
-    
-    @ApiProperty({ required: true })
-    @Matches(/^[0-2][0-2]:[0-5][0-9]$/gm, {message : "Time must be HH:MM"})
-    @IsString()
-    @IsNotEmpty()
-    scheduletime : string;
-    
 
-    @ApiProperty({ required: true, type : TrainerDto})
-    @IsObject()
-    @IsNotEmpty()
-    trainerdetails: TrainerDto 
-}
-
-export class DeleteSchduleDto {
-    @ApiProperty({ required: true })
-    @IsString()
-    @IsNotEmpty()
-    id: string;
-}
 
 
 

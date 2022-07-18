@@ -2,9 +2,10 @@ import { BadRequestException, Body, Injectable, InternalServerErrorException, No
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Admin, AdminDocument } from "./Entity/admin.model";
-import { AddAdminDto, AdminSignInDto, SearchAdminDto } from "./Dtos/admin.dtos";
+import { AddAdmin, AdminSignIn, SearchAdmin } from "./Dtos/admin.dtos";
 import { ConfigService } from "@nestjs/config";
 import { UtilService } from "./Utils/Utils";
+import { ObjectId } from "mongodb";
 
 
 
@@ -13,9 +14,9 @@ export class AppService {
     constructor(@InjectModel(Admin.name) private readonly adminModel: Model<AdminDocument>, private readonly configService:ConfigService, private readonly utilService: UtilService) {}
 
 
-     login (@Body() superadmin: AdminSignInDto) {
+     login (@Body() superadmin: AdminSignIn) {
          try{
-            console.log(superadmin, "FROM THE SERVICE")
+            // console.log(superadmin, "FROM THE SERVICE")
             const superAdminUsername = this.configService.get("SUPER_ADMIN_USERNAME");
             const superAdminPassword = this.configService.get("SUPER_ADMIN_PASSWORD");
            if(superadmin.email !== superAdminUsername) {
@@ -24,10 +25,7 @@ export class AppService {
               throw new BadRequestException("Password didn't matched");
            }
  
-           return ["successfully authenticated.", {
-            username: superAdminUsername,
-            password : superAdminPassword
-           }]
+           return ["successfully authenticated.",superAdminUsername]
          }catch(error){
             throw new InternalServerErrorException(error);
          }
@@ -35,14 +33,21 @@ export class AppService {
 
     async getAllAdmins(){
          try{
-           const admins = await this.adminModel.find({})
-           return admins;
+           const admins = await this.adminModel.find({});
+           let modifiedAdmins = [];
+           for(let i = 0; i < admins.length; i++) {
+                modifiedAdmins.push({
+                    id: admins[i]._id,
+                    email: admins[i].email
+                })
+           };
+           return modifiedAdmins;
          }catch(error){
              throw new InternalServerErrorException(error);
          }
     }
 
-    async addAdmin(admin: AddAdminDto) {
+    async addAdmin(admin: AddAdmin) {
         try{
             const adminList = await this.adminModel.find({});
             if(adminList.length === 5){
@@ -63,14 +68,14 @@ export class AppService {
         }
     }
 
-    async deleteAdmin(admin: SearchAdminDto) {
+    async deleteAdmin(id: ObjectId) {
         try{
-          const isAdminExist = await this.adminModel.find({email: admin.email})
+          const isAdminExist = await this.adminModel.find({_id: id})
           if(!isAdminExist) {
-              throw new NotFoundException("Email not found.")
+              throw new NotFoundException("ID not found.")
           }
-          await this.adminModel.deleteOne({email: admin.email});
-          return `${admin.email} has successfully been deleted.`
+          await this.adminModel.deleteOne({_id:id});
+          return `${id} has successfully been deleted.`
         }catch(error){
             throw new InternalServerErrorException(error);
         }

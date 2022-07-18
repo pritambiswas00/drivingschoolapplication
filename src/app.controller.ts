@@ -1,19 +1,23 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Post, Render, Session } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Render, Session, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { ObjectId } from "mongodb";
 import { AppService } from "./app.service";
-import { AddAdminDto, AdminSignInDto, SearchAdminDto } from "./Dtos/admin.dtos";
+import { AddAdmin, AdminSignIn, SearchAdmin } from "./Dtos/admin.dtos";
+import { RootGuard } from "./Guards/isRoot.guard";
+import { IsRootInterceptor } from "./Interceptors/isRoot.interceptor";
 
 
 
 @ApiTags("Root")
 @Controller("root")
+@UseInterceptors(IsRootInterceptor)
 export class AppController {
      constructor(private readonly appService: AppService) {}
      
      @Post("/login")
-     async login(@Body() superadmin:AdminSignInDto, @Session() session: any){
-          const [messageString, superadmindetails] = this.appService.login(superadmin);
-          session.superadmindetails = superadmindetails;
+     async login(@Body() superadmin:AdminSignIn, @Session() session: any){
+          const [messageString, superAdminUsername] = this.appService.login(superadmin);
+          session.superadminusername = superAdminUsername;
           return{
                status: HttpStatus.OK,
                message: messageString
@@ -21,38 +25,30 @@ export class AppController {
      }
 
      @Post("/logout")
+     @UseGuards(RootGuard)
      async logout(@Session() session?: any){
-          if(!session){
-               throw new BadRequestException("You are not logged.")
-          }
-          session.superadmindetails = null;
+          session.superadminusername = null;
           return {
                message: "Successfully logged out."
           }
      }
 
      @Get("/getAllAdmins")
-     async getAllAdmins(@Session() session?:any){
-          if(!session){
-               throw new BadRequestException("You are not authorized");
-          }
+     @UseGuards(RootGuard)
+     async getAllAdmins(){
          const admins = await this.appService.getAllAdmins();
          return admins;
      }
 
      @Post("/addAdmin")
-     async addAdmin(@Body() admin: AddAdminDto, @Session() session?: any){
-          if(!session){
-               throw new BadRequestException("You are not authorized");
-          }
+     @UseGuards(RootGuard)
+     async addAdmin(@Body() admin: AddAdmin){
             return this.appService.addAdmin(admin);
      }
 
-     @Delete("/deleteAdmin")
-     async removeAdmin(@Body() body: SearchAdminDto, @Session() session?: any ){
-          if(!session){
-               throw new BadRequestException("You are not authorized");
-          }
-          return this.appService.deleteAdmin(body);
+     @Delete("/deleteAdmin/:adminId")
+     @UseGuards(RootGuard)
+     async removeAdmin(@Param("adminId") param : ObjectId){
+          return this.appService.deleteAdmin(param);
      }
 }

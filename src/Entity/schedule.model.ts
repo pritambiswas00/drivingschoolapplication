@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
+import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 import { Trainer, TrainerSchema } from './trainer.model';
 
@@ -20,8 +21,8 @@ export class Schedule {
   @Type(() => Trainer)
   trainerdetails: Trainer;
 
-  @Prop({ required: true })
-  userid : string
+  @Prop({ required: true, type : ObjectId })
+  userid : ObjectId
 }
 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);

@@ -15,6 +15,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Admin } from 'mongodb';
 import { AdminSchema } from './Entity/admin.model';
 import { UtilService } from './Utils/Utils';
+import { IsRootInterceptor } from './Interceptors/isRoot.interceptor';
 
 @Module({
   imports: [
@@ -67,6 +68,6 @@ import { UtilService } from './Utils/Utils';
     MongooseModule.forFeature([{name: Admin.name, schema:AdminSchema}])
   ],
   controllers: [AppController],
-  providers: [AppService, UtilService],
+  providers: [AppService, UtilService, IsRootInterceptor],
 })
 export class AppModule {}

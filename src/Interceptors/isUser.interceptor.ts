@@ -10,7 +10,7 @@ export class IsUserInterceptor implements NestInterceptor{
     async intercept(context: ExecutionContext, next: CallHandler<any>){
         const request = context.switchToHttp().getRequest();
         const {userId} = request.session || {}
-        console.log(userId, "USER IDD")
+        //console.log(userId, "USER IDD")
         if(userId) {
             const user = await this.userService.findUserById(userId);
             request.user = user; 
