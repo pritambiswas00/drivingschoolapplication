@@ -1,5 +1,0 @@
- docker run -d --name database \
-  --network=api \
-  -p 27012:27012 \
-  -e "MONGODB_DB=database" \
-  postgres:9.6

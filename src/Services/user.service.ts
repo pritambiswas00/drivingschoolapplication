@@ -31,6 +31,51 @@ export class UserService {
          return this.userModel.find({});
     }
 
+    async updateUser(user: UpdateUser, userId: ObjectId):Promise<User>{
+        console.log(user, userId)
+        try{
+           const isUserExist = await this.userModel.findOne({ _id: userId });
+           if(!isUserExist){
+               throw new NotFoundException(`User ${userId} does not exist`);
+           }
+           const updatedUserKeys = Object.keys(user);
+           for(let i = 0; i < updatedUserKeys.length; i++){
+                 switch(updatedUserKeys[i]){
+                     case "password": 
+                         const isMatched = await this.utilService.comparePassword(user[updatedUserKeys[i]], isUserExist.password);
+                         if(isMatched){
+                             throw new BadRequestException(`Password can not be matched with current one.`);
+                         }
+                         const hashedPassword = await this.utilService.hashPassword(user[updatedUserKeys[i]]);
+                         isUserExist[updatedUserKeys[i]] = hashedPassword;
+                         break;
+                     case "name":
+                     case "email":
+                     case "endDate":
+                         isUserExist[updatedUserKeys[i]] = user[updatedUserKeys[i]];
+                         break;
+                     default:
+                         break;
+
+                 }
+           }
+           const newDate:Date = new Date();
+           isUserExist["updatedAt"] = newDate;
+           await isUserExist.save();
+           return isUserExist;
+        }catch(error){
+            throw new InternalServerErrorException(error)
+        }
+}
+
+    async userDelete(userId: ObjectId):Promise<User> {
+     const user = await this.userModel.findByIdAndDelete(userId);
+     if(!user){
+         throw new NotFoundException(`User ${userId} does not exist`);
+     }
+     return user;
+    }
+
     findUserByEmail(email : string) {
         return this.userModel.findOne({ email: email });
     }
@@ -90,29 +135,6 @@ export class UserService {
        return this.trainerService.getAllTrainer(); 
     }
 
-    async updateUser(user: UpdateUser, userId: ObjectId):Promise<User>{
-            try{
-               const isUserExist = await this.userModel.findOne({ _id: userId });
-               if(!isUserExist){
-                   throw new NotFoundException(`User ${userId} does not exist`);
-               }
-               const updatedUserKeys = Object.keys(user);
-               for(let i = 0; i < updatedUserKeys.length; i++){
-                     isUserExist[updatedUserKeys[i]] = user[updatedUserKeys[i]]; 
-               }
-               await isUserExist.save();
-               return isUserExist;
-            }catch(error){
-                throw new InternalServerErrorException(error)
-            }
-    }
 
-    async userDelete(userId: ObjectId):Promise<User> {
-         const user = await this.userModel.findByIdAndDelete(userId);
-         if(!user){
-             throw new NotFoundException(`User ${userId} does not exist`);
-         }
-         return user;
-    }
 
 }

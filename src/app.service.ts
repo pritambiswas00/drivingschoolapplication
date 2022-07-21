@@ -48,7 +48,6 @@ export class AppService {
     }
 
     async addAdmin(admin: AddAdmin) {
-        try{
             const adminList = await this.adminModel.find({});
             if(adminList.length === 5){
                 throw new BadRequestException("Admin can't be created. Max range of admin is 5");
@@ -63,9 +62,6 @@ export class AppService {
              isAdminExist = new this.adminModel({ email : admin.email, password : hashedPassword });
              isAdminExist.save();
              return isAdminExist;
-        }catch(error){
-            throw new InternalServerErrorException(error);
-        }
     }
 
     async deleteAdmin(id: ObjectId) {

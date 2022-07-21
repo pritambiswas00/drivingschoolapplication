@@ -8,7 +8,7 @@ export type ScheduleDocument = Schedule & Document;
 
 @Schema()
 export class Schedule {
-  @Prop({ required : true})
+  @Prop({ required : true, max: 20})
   schedulename: string;
 
   @Prop({ required : true, unique: true})
@@ -23,6 +23,12 @@ export class Schedule {
 
   @Prop({ required: true, type : ObjectId })
   userid : ObjectId
+
+  @Prop({ required : false, default : Date.now })
+  createdAt : Date
+
+  @Prop({ required : false, default : Date.now })
+  updateddAt : Date
 }
 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);

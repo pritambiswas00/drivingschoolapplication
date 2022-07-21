@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Render, Session, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ObjectId } from "mongodb";
 import { AppService } from "./app.service";
 import { AddAdmin, AdminSignIn, SearchAdmin } from "./Dtos/admin.dtos";
@@ -14,6 +14,7 @@ import { IsRootInterceptor } from "./Interceptors/isRoot.interceptor";
 export class AppController {
      constructor(private readonly appService: AppService) {}
      
+     @ApiOperation({ summary: 'Login SuperAdmin ****' })
      @Post("/login")
      async login(@Body() superadmin:AdminSignIn, @Session() session: any){
           const [messageString, superAdminUsername] = this.appService.login(superadmin);
@@ -24,6 +25,7 @@ export class AppController {
           }
      }
 
+     @ApiOperation({ summary: 'Logout SuperAdmin ****' })
      @Post("/logout")
      @UseGuards(RootGuard)
      async logout(@Session() session?: any){
@@ -33,6 +35,7 @@ export class AppController {
           }
      }
 
+     @ApiOperation({ summary: 'Get All Admins ****' })
      @Get("/getAllAdmins")
      @UseGuards(RootGuard)
      async getAllAdmins(){
@@ -40,12 +43,14 @@ export class AppController {
          return admins;
      }
 
+     @ApiOperation({ summary: 'Add Admin ****' })
      @Post("/addAdmin")
      @UseGuards(RootGuard)
      async addAdmin(@Body() admin: AddAdmin){
             return this.appService.addAdmin(admin);
      }
 
+     @ApiOperation({ summary: 'Delete Admin ****' })
      @Delete("/deleteAdmin/:adminId")
      @UseGuards(RootGuard)
      async removeAdmin(@Param("adminId") param : ObjectId){

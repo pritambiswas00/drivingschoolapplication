@@ -5,7 +5,7 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop({ required : true, unique : true})
+  @Prop({ required : true, unique : true, max : 14})
   billnumber : String;
 
   @Prop({ required : true})
@@ -14,7 +14,7 @@ export class User {
   @Prop({ required : true, unique : true })
   phonenumber: String;
 
-  @Prop({ required : true })
+  @Prop({ required : true, max: 20 })
   name : String;
 
   @Prop({ required : true })
@@ -32,7 +32,7 @@ export class User {
   @Prop({ required : false, default : Date.now })
   createdAt : Date
 
-  @Prop({ required : true, trim : true})
+  @Prop({ required : true, trim : true, max: 10})
   password : String;
 
   @Prop({ required: false, default : Date.now })

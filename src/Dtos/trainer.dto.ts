@@ -62,28 +62,31 @@ export class TrainerCreate {
 }
 
 export class TrainerUpdate {
-
     @ApiProperty({ required: false })
     @IsEmail()
     @IsString()
     @IsOptional()
-    email: string;
+    email?: string;
+    
+    @ApiProperty({ required: false })
+    @IsString()
+    @IsOptional()
+    trainername ?: string;
+    
+    @ApiProperty({ required: false, type : String })
+    @IsString()
+    @IsOptional()
+    make ?: string;
 
-    @ApiProperty({ required: false })
-    @IsPhoneNumber()
+    @ApiProperty({ required: false, type : String })
     @IsString()
     @IsOptional()
-    phonenumber: string;
-    
-    @ApiProperty({ required: false })
+    model ?: string;
+
+    @ApiProperty({ required: false, type : String })
     @IsString()
     @IsOptional()
-    trainername : string;
-    
-    @ApiProperty({ required: false, type : CarDto })
-    @IsObject() 
-    @IsOptional()
-    cardetails : CarDto
+    vin ?: string;
 }
 
 

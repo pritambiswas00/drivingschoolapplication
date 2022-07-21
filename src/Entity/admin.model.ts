@@ -11,7 +11,7 @@ export class Admin {
   // @Prop({ required : true, unique : true})
   // phonenumber: String;
 
-  @Prop({ required: true})
+  @Prop({ required: true, max: 10})
   password: String;
 }
 

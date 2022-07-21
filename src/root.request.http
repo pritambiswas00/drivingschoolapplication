@@ -24,12 +24,9 @@ Content-Type: application/json
 }
 
 ####Delete Admin ####
-DELETE http://localhost:4000/root/deleteAdmin
+DELETE http://localhost:4000/root/deleteAdmin/62d71002e14c8b7f0ec7e411
 Content-Type: application/json
 
-{
-    "email":"pritam2@gmail.com"
-}
 
 ###Logout #####
 POST http://localhost:4000/root/logout

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString, IsNotEmpty, IsAlphanumeric, IsOptional, IsPhoneNumber, Matches, IsObject, IsBoolean } from "class-validator";
+import { IsEmail, IsString, IsNotEmpty, IsAlphanumeric, IsOptional, IsPhoneNumber, Matches, IsObject, IsBoolean, max, MaxLength, IsMongoId } from "class-validator";
+import { PartialType } from '@nestjs/mapped-types';
 import { IsObjectId } from 'class-validator-mongo-object-id';
 import { ObjectId } from "mongodb";
 import { UpdateScheduleByUser } from "./auth.user.Dtos";
@@ -41,94 +42,79 @@ export class AdminSignIn {
 }
 
 export class CreateUser {
-
     @ApiProperty({ required : true})
     @IsAlphanumeric()
     @IsString()
     @IsNotEmpty()
-    billnumber : string;
+    public billnumber : string;
 
     @ApiProperty({ required : true })
     @IsEmail()
     @IsString()
     @IsNotEmpty()
-    email : string;
+    public email : string;
     
     @ApiProperty({ required : true })
     @IsPhoneNumber()
     @IsString()
     @IsNotEmpty()
-    phonenumber : string;
+    public phonenumber : string;
 
     @ApiProperty({ required : true })
     @IsString()
+    @MaxLength(30)
     @IsNotEmpty()
-    name : string;
+    public name : string;
 
     @ApiProperty({ required : true })
     @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
     @IsString()
     @IsNotEmpty()
-    startDate : string;
+    public startDate : string;
 
     @ApiProperty({ required : false })
     @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
     @IsString()
     @IsOptional()
-    endDate? : string;
+    public endDate? : string;
 
     @ApiProperty({ required : true })
     @IsString()
     @IsNotEmpty()
-    password : string;
+    public password : string;
 }
 
 export class UpdateUser {
-
-    @ApiProperty({ required : false})
-    @IsAlphanumeric()
-    @IsString()
-    @IsOptional()
-    billnumber : string;
-
-    @ApiProperty({ required : false})
+    @ApiProperty({ required : false })
     @IsEmail()
     @IsString()
+    @IsNotEmpty()
     @IsOptional()
-    email : string;
-    
-    @ApiProperty({ required : false})
-    @IsPhoneNumber()
-    @IsString()
-    @IsOptional()
-    phonenumber : string;
+    public email ?: string;
 
-    @ApiProperty({ required : false})
+    @ApiProperty({ required : false })
     @IsString()
+    @MaxLength(30)
+    @IsNotEmpty()
     @IsOptional()
-    name : string;
-
-    @ApiProperty({ required : false})
-    @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
-    @IsString()
-    @IsOptional()
-    startDate : string;
+    public name ?: string;
 
     @ApiProperty({ required : false })
     @Matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/, {message : "Date must be MM/DD/YYYY"})
     @IsString()
     @IsOptional()
-    endDate? : string;
+    public endDate? : string;
 
-    @ApiProperty({ required : false})
+    @ApiProperty({ required : false })
     @IsString()
+    @IsNotEmpty()
     @IsOptional()
-    password : string;
+    public password ?: string;
 }
 
 export class CreateScheduleByAdmin {
     @ApiProperty({ required : true, type: ObjectId })
-    @IsString()
+    @IsMongoId()
     @IsNotEmpty()
     userid: ObjectId
    
@@ -163,24 +149,6 @@ export class DeleteScheduleByAdmin{
     scheduleid: ObjectId
 }
 
-export class CreateTrainer{
-    @ApiProperty({ required : true, type: TrainerCreate })
-    @IsObject()
-    @IsNotEmpty()
-    trainer: TrainerCreate
-}
-
-export class UpdateTrainer{
-    @ApiProperty({ required : true, type: ObjectId })
-    @IsObjectId()
-    @IsNotEmpty()
-    trainerid: ObjectId
-
-    @ApiProperty({ required : true, type: TrainerUpdate })
-    @IsObject()
-    @IsNotEmpty()
-    trainer: TrainerUpdate
-}
 
 export class DeleteTrainer{
     @ApiProperty({ required : true, type:ObjectId })

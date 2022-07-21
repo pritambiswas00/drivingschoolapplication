@@ -1,6 +1,7 @@
 version: "2.6"
 services:
   back_app:
+    image: 
     depends_on:
       - db
     restart: always

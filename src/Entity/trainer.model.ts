@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 import { CarDto, TrainerUpdate } from 'src/Dtos/trainer.dto';
 
@@ -13,7 +12,7 @@ export class Trainer {
   @Prop({type: String, required : true, unique: true})
   phonenumber: string;
 
-  @Prop({ type : String, required : true})
+  @Prop({ type : String, required : true, max: 20})
   trainername : string;
 
   @Prop({ type: Object, required : true })
@@ -24,6 +23,12 @@ export class Trainer {
 
   @Prop({ type: Boolean, required : false, default: false })
   status: boolean;
+
+  @Prop({ required: false, default : Date.now })
+  updatedAt : Date
+
+  @Prop({ required : false, default : Date.now })
+  createdAt : Date
 
   updateTrainer : Function;
 }
@@ -39,7 +44,6 @@ TrainerSchema.methods.updateTrainer = async function (updatedetails: TrainerUpda
                    case "cardetails":
                       const cardetails: CarDto = updatedetails[keys[i]];
                       const carkeys = Object.keys(cardetails);
-                      console.log(carkeys, "CAR KEYSS");
                       for(let j = 0; j < carkeys.length;j++){
                           trainer[keys[i]][j] = cardetails[j];
                       }

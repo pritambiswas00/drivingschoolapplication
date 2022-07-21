@@ -5,8 +5,9 @@ import { Admin } from 'src/Entity/admin.model';
 import { IsAdmin } from 'src/Decorators/isAdmin.decorator';
 import { IsAdminInterceptor } from 'src/Interceptors/isAdmin.interceptor';
 import { AdminGuard } from 'src/Guards/isAdmin.guard';
-import { AddAdmin, CreateScheduleByAdmin, CreateTrainer, CreateUser, DeleteScheduleByAdmin, DeleteTrainer, UpdateScheduleByAdmin, UpdateTrainer, UpdateUser } from 'src/Dtos/admin.dtos';
+import { AddAdmin, CreateScheduleByAdmin, CreateUser, DeleteScheduleByAdmin, DeleteTrainer, UpdateScheduleByAdmin, UpdateUser } from 'src/Dtos/admin.dtos';
 import { ObjectId } from 'mongodb';
+import { TrainerCreate, TrainerUpdate } from 'src/Dtos/trainer.dto';
 
 
 @ApiTags("Admin")
@@ -15,6 +16,7 @@ import { ObjectId } from 'mongodb';
 export class AdminController {
     constructor(private readonly adminService: AdminService) { }
 
+    @ApiOperation({ summary: 'Login Admin ****' })
     @Post("/login")
     async login(@Body() body: AddAdmin, @Session() session: any) {
         const admin= await this.adminService.login(body);
@@ -26,6 +28,7 @@ export class AdminController {
         }
     }
 
+    @ApiOperation({ summary: 'Logout Admin ****' })
     @Post("/logout")
     @UseGuards(AdminGuard)
     async logout(@Session() session: any) {
@@ -33,6 +36,7 @@ export class AdminController {
     }
     
 
+    @ApiOperation({ summary: 'Add User ****' })
     @Post("/addUser")
     @UseGuards(AdminGuard)
     async createUser(@Body() body: CreateUser, @IsAdmin() admin : Admin) {
@@ -45,40 +49,46 @@ export class AdminController {
            }
     }
 
+    @ApiOperation({ summary: 'Get All Users ****' })
     @Get("/getAllUsers")
     @UseGuards(AdminGuard)
     async getAllUsers() {
          return this.adminService.getAllUsers()
     }
 
+    @ApiOperation({ summary: 'Edit User ****' })
     @Patch("/editUser/:userId")
     @UseGuards(AdminGuard)
     async editUser(@Param("userId") userId: ObjectId, @Body() body: UpdateUser) {
          return this.adminService.editUser(body, userId);   
     }
 
+    @ApiOperation({ summary: 'Delete User ****' })
     @Delete("/deleteUser/:userId")
     @UseGuards(AdminGuard)
     async deleteUser(@Param("userId") userId: ObjectId) {
          return this.adminService.deleteUser(userId);
     }
 
+    @ApiOperation({ summary: 'Add Trainer ****' })
     @Post("/addTrainer")
     @UseGuards(AdminGuard)
-    async addTrainer (@Body() body: CreateTrainer) {
+    async addTrainer (@Body() body: TrainerCreate) {
          return this.adminService.addTrainer(body);
     }
 
-    @Patch("/editTrainer")
+    @ApiOperation({ summary: 'Edit Trainer ****' })
+    @Patch("/editTrainer/:trainerId")
     @UseGuards(AdminGuard)
-    async editTrainer (@Body() body: UpdateTrainer) {
-          return this.adminService.editTrainer(body);
+    async editTrainer (@Param("trainerId") trainerId : ObjectId,@Body() body: TrainerUpdate) {
+          return this.adminService.editTrainer(body, trainerId);
     }
 
-    @Delete("/deleteTrainer")
+    @ApiOperation({ summary: 'Delete Trainer *' })
+    @Delete("/deleteTrainer/:trainerId")
     @UseGuards(AdminGuard)
-    async deleteTrainer (@Body() body: DeleteTrainer) {
-            const trainer = await this.adminService.deleteTrainer(body.trainerid);
+    async deleteTrainer (@Param("trainerId") trainerId: ObjectId) {
+            const trainer = await this.adminService.deleteTrainer(trainerId);
             const { trainername } = trainer;
             return {
                   status: HttpStatus.OK,
@@ -86,6 +96,7 @@ export class AdminController {
             }
     }
 
+    @ApiOperation({ summary: 'Get All Trainers ' })
     @Get("/getAllTrainers") 
     @UseGuards(AdminGuard)
     async getAllTrainers () {
@@ -100,15 +111,15 @@ export class AdminController {
     }
 
     @ApiOperation({ summary: 'Admin Edit Schedule *' })
-    @Patch("/schedule/edit")
+    @Patch("/edit/user/:userId/schedule/:scheduleId")
     @UseGuards(AdminGuard)
-    async updateSchedule(@Body() body: UpdateScheduleByAdmin, @IsAdmin() admin: Admin) {
+    async updateSchedule(@Body() body: UpdateScheduleByAdmin, @Param("userId") userId: ObjectId, @Param("scheduleId") scheduleId: ObjectId) {
           return this.adminService.editSchedule(body);
     }
 
 
     @ApiOperation({ summary: 'Admin Delete Schedule *' })
-    @Delete("/schedule/edit")
+    @Delete("/delete/user/:userId/schedule/:scheduleId")
     @UseGuards(AdminGuard)
     async deleteSchedule(@Body() body: DeleteScheduleByAdmin, @IsAdmin() admin: Admin) {
           return this.adminService.deleteSchedule(body);

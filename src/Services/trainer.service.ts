@@ -49,17 +49,30 @@ export class TrainerService{
             }
     }
 
-    async findOneById(id: ObjectId) {
+    async findOneById(id: ObjectId):Promise<Trainer> {
         const trainer = await this.trainerModel.findOne({ _id: id });
         return trainer;
     }
 
-    async editTrainer(trainer: TrainerUpdate, id: ObjectId){
+    async editTrainer(trainer: TrainerUpdate, id: ObjectId):Promise<Trainer>{
+        console.log(trainer, "TRAINER")
         const trainerexist = await this.trainerModel.findOne({ _id: id });
         if(!trainerexist){
-            throw new NotFoundException("Trainer not found.")
+            throw new NotFoundException("Trainer not found.");
         }
-        await trainerexist.updateTrainer(trainer);
-        
+        const updatedKeys = Object.keys(trainer);
+        for(let i = 0; i < updatedKeys.length; i++) {
+             switch(trainer[updatedKeys[i]]){
+                 case 'email':
+                 case 'trainername':
+                      trainerexist[updatedKeys[i]] = trainer[updatedKeys[i]];
+                      break;
+                 default:
+                      break;
+             }
+        }
+
+        await trainerexist.save();
+        return trainerexist;
     }
 }
